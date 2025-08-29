@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Activity</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="app-container">
+        <h1 class="card-title">Programming Activity</h1>
+        <div id="menu" class="glassy-card">
+            <h2 class="card-title">Main Menu</h2>
+            <button class="menu-button" onclick="showSection('decimal-conversion')">1. Convert Decimal to Binary/Octal/Hex</button>
+            <button class="menu-button" onclick="showSection('base-conversion')">2. Convert Binary/Octal/Hex to Decimal</button>
+            <button class="menu-button" onclick="showSection('addition')">3. Add Two Numbers in Any Base</button>
+            <button class="menu-button" onclick="showSection('encode')">4. Secret Code Translator (Encode)</button>
+            <button class="menu-button" onclick="showSection('decode')">5. Secret Code Translator (Decode)</button>
+            <button class="menu-button" onclick="exitProgram()">6. Exit Program</button>
+        </div>
+    </div>
+
+    <!-- The Modal Structure -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div id="modal-title"></div>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Helper function to show a specific section and populate the modal
+        function showSection(sectionId) {
+            const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            let htmlContent = '';
+            let title = '';
+
+            switch (sectionId) {
+                case 'decimal-conversion':
+                    title = '<h2 class="card-title">Decimal to Binary/Octal/Hex</h2>';
+                    htmlContent = `
+                        <div class="input-group">
+                            <label for="decimalInput">Decimal Number:</label>
+                            <input type="text" id="decimalInput" placeholder="e.g., 2025 or 51.5">
+                        </div>
+                        <button class="action-button" onclick="convertDecimal()">Convert</button>
+                        <div id="result-decimal" class="result-box" style="display:none;"></div>
+                    `;
+                    break;
+                case 'base-conversion':
+                    title = '<h2 class="card-title">Any Base to Decimal</h2>';
+                    htmlContent = `
+                        <div class="input-group">
+                            <label for="baseNumber">Number:</label>
+                            <input type="text" id="baseNumber" placeholder="e.g., 1101.1">
+                        </div>
+                        <div class="input-group">
+                            <label for="baseSelect">Base:</label>
+                            <select id="baseSelect">
+                                <option value="2">Binary (2)</option>
+                                <option value="8">Octal (8)</option>
+                                <option value="16">Hex (16)</option>
+                            </select>
+                        </div>
+                        <button class="action-button" onclick="convertBase()">Convert</button>
+                        <div id="result-base" class="result-box" style="display:none;"></div>
+                    `;
+                    break;
+                case 'addition':
+                    title = '<h2 class="card-title">Add Two Numbers in Any Base</h2>';
+                    htmlContent = `
+                        <div class="input-group">
+                            <label for="num1">First Number:</label>
+                            <input type="text" id="num1" placeholder="e.g., 101101">
+                        </div>
+                        <div class="input-group">
+                            <label for="base1">Base:</label>
+                            <select id="base1">
+                                <option value="2">Binary (2)</option>
+                                <option value="8">Octal (8)</option>
+                                <option value="10">Decimal (10)</option>
+                                <option value="16">Hex (16)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="num2">Second Number:</label>
+                            <input type="text" id="num2" placeholder="e.g., 2F">
+                        </div>
+                        <div class="input-group">
+                            <label for="base2">Base:</label>
+                            <select id="base2">
+                                <option value="2">Binary (2)</option>
+                                <option value="8">Octal (8)</option>
+                                <option value="10">Decimal (10)</option>
+                                <option value="16">Hex (16)</option>
+                            </select>
+                        </div>
+                        <button class="action-button" onclick="addNumbers()">Add</button>
+                        <div id="result-addition" class="result-box" style="display:none;"></div>
+                    `;
+                    break;
+                case 'encode':
+                    title = '<h2 class="card-title">Secret Code Translator (Encode)</h2>';
+                    htmlContent = `
+                        <div class="input-group">
+                            <label for="message">Message:</label>
+                            <input type="text" id="message" placeholder="e.g., HELLO">
+                        </div>
+                        <div class="input-group">
+                            <label for="secretKeyEncode">Secret Key:</label>
+                            <input type="number" id="secretKeyEncode" placeholder="e.g., 5">
+                        </div>
+                        <button class="action-button" onclick="encodeMessage()">Encode</button>
+                        <div id="result-encode" class="result-box" style="display:none;"></div>
+                    `;
+                    break;
+                case 'decode':
+                    title = '<h2 class="card-title">Secret Code Translator (Decode)</h2>';
+                    htmlContent = `
+                        <div class="input-group">
+                            <label for="encodedValues">Encoded Values (comma-separated):</label>
+                            <input type="text" id="encodedValues" placeholder="e.g., 77,74,81,81,84">
+                        </div>
+                        <div class="input-group">
+                            <label for="secretKeyDecode">Secret Key:</label>
+                            <input type="number" id="secretKeyDecode" placeholder="e.g., 5">
+                        </div>
+                        <button class="action-button" onclick="decodeMessage()">Decode</button>
+                        <div id="result-decode" class="result-box" style="display:none;"></div>
+                    `;
+                    break;
+                case 'exit':
+                    title = '<h2 class="card-title">Exit</h2>';
+                    htmlContent = `<p style="text-align: center;">Exiting program. Goodbye!</p>`;
+                    break;
+                default:
+                    title = '<h2 class="card-title">Invalid Option</h2>';
+                    htmlContent = `<p class="error-message">Invalid option selected.</p>`;
+                    break;
+            }
+
+            modalTitle.innerHTML = title;
+            modalContent.innerHTML = htmlContent;
+            modal.style.display = 'flex';
+        }
+
+        // Close modal function
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+
+        // --- JavaScript Functions for Features ---
+
+        function convertToAnyBase(decimal, base) {
+            if (decimal === 0) return '0';
+            let [intPart, fracPart] = String(decimal).split('.');
+            let result = '';
+
+            // Convert integer part
+            let intValue = parseInt(intPart, 10);
+            if (intValue < 0) intValue = -intValue;
+            while (intValue > 0) {
+                let remainder = intValue % base;
+                result = String(remainder) + result;
+                intValue = Math.floor(intValue / base);
+            }
+            if (result === '') result = '0';
+
+            // Convert fractional part
+            if (fracPart) {
+                let fracValue = parseFloat('0.' + fracPart);
+                result += '.';
+                for (let i = 0; i < 16 && fracValue > 0; i++) { // Limit precision
+                    fracValue *= base;
+                    let digit = Math.floor(fracValue);
+                    if (base === 16 && digit >= 10) {
+                        result += String.fromCharCode(55 + digit);
+                    } else {
+                        result += String(digit);
+                    }
+                    fracValue -= digit;
+                }
+            }
+            return result;
+        }
+        
+        function convertBaseToDecimal(num, base) {
+            let parts = String(num).split('.');
+            let integerPart = parts[0];
+            let fractionalPart = parts[1] || '';
+
+            let decimal = 0;
+            // Convert integer part
+            for (let i = 0; i < integerPart.length; i++) {
+                let digit = parseInt(integerPart[i], base);
+                if (isNaN(digit)) return NaN;
+                decimal += digit * Math.pow(base, integerPart.length - 1 - i);
+            }
+
+            // Convert fractional part
+            for (let i = 0; i < fractionalPart.length; i++) {
+                let digit = parseInt(fractionalPart[i], base);
+                if (isNaN(digit)) return NaN;
+                decimal += digit * Math.pow(base, -(i + 1));
+            }
+            return decimal;
+        }
+
+        // 1. Decimal to Any Base
+        function convertDecimal() {
+            const input = document.getElementById('decimalInput').value;
+            const resultBox = document.getElementById('result-decimal');
+
+            if (input === '' || isNaN(parseFloat(input))) {
+                resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter a valid number.</p>';
+                resultBox.style.display = 'block';
+                return;
+            }
+
+            const decimalNum = parseFloat(input);
+            const binary = convertToAnyBase(decimalNum, 2);
+            const octal = convertToAnyBase(decimalNum, 8);
+            const hex = convertToAnyBase(decimalNum, 16);
+
+            resultBox.innerHTML = `
+                <p><strong>Binary:</strong> ${binary}</p>
+                <p><strong>Octal:</strong> ${octal}</p>
+                <p><strong>Hex:</strong> ${hex}</p>
+            `;
+            resultBox.style.display = 'block';
+        }
+
+        // 2. Any Base to Decimal
+        function convertBase() {
+            const num = document.getElementById('baseNumber').value;
+            const base = parseInt(document.getElementById('baseSelect').value);
+            const resultBox = document.getElementById('result-base');
+
+            const decimal = convertBaseToDecimal(num, base);
+
+            if (isNaN(decimal)) {
+                 resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter a valid number for the selected base.</p>';
+            } else {
+                resultBox.innerHTML = `<p><strong>Decimal:</strong> ${decimal}</p>`;
+            }
+            resultBox.style.display = 'block';
+        }
+
+        // 3. Add Two Numbers in Any Base
+        function addNumbers() {
+            const num1Str = document.getElementById('num1').value;
+            const base1 = parseInt(document.getElementById('base1').value);
+            const num2Str = document.getElementById('num2').value;
+            const base2 = parseInt(document.getElementById('base2').value);
+            const resultBox = document.getElementById('result-addition');
+            
+            const decimal1 = convertBaseToDecimal(num1Str, base1);
+            const decimal2 = convertBaseToDecimal(num2Str, base2);
+
+            if (isNaN(decimal1) || isNaN(decimal2)) {
+                resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter valid numbers for both bases.</p>';
+                resultBox.style.display = 'block';
+                return;
+            }
+
+            const sumDecimal = decimal1 + decimal2;
+            const sumBinary = convertToAnyBase(sumDecimal, 2);
+            const sumOctal = convertToAnyBase(sumDecimal, 8);
+            const sumHex = convertToAnyBase(sumDecimal, 16);
+
+            resultBox.innerHTML = `
+                <p><strong>Result (Decimal):</strong> ${sumDecimal}</p>
+                <p><strong>Result (Binary):</strong> ${sumBinary}</p>
+                <p><strong>Result (Octal):</strong> ${sumOctal}</p>
+                <p><strong>Result (Hex):</strong> ${sumHex}</p>
+            `;
+            resultBox.style.display = 'block';
+        }
+
+        // 4. Secret Code Translator (Encode)
+        function encodeMessage() {
+            const message = document.getElementById('message').value;
+            const key = parseInt(document.getElementById('secretKeyEncode').value);
+            const resultBox = document.getElementById('result-encode');
+
+            if (message === '' || isNaN(key)) {
+                resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter a message and a valid key.</p>';
+                resultBox.style.display = 'block';
+                return;
+            }
+
+            const decimalList = [];
+            const hexList = [];
+
+            for (const char of message) {
+                const ascii = char.charCodeAt(0);
+                const encoded = ascii + key;
+                decimalList.push(encoded);
+                hexList.push(encoded.toString(16).toUpperCase());
+            }
+
+            resultBox.innerHTML = `
+                <p><strong>Encoded (Decimal):</strong> [${decimalList.join(', ')}]</p>
+                <p><strong>Encoded (Hex):</strong> [${hexList.join(', ')}]</p>
+            `;
+            resultBox.style.display = 'block';
+        }
+
+        // 5. Secret Code Translator (Decode)
+        function decodeMessage() {
+            const encodedStr = document.getElementById('encodedValues').value;
+            const key = parseInt(document.getElementById('secretKeyDecode').value);
+            const resultBox = document.getElementById('result-decode');
+
+            if (encodedStr === '' || isNaN(key)) {
+                resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter values and a valid key.</p>';
+                resultBox.style.display = 'block';
+                return;
+            }
+
+            const values = encodedStr.split(',').map(val => parseInt(val.trim()));
+            let decodedMessage = '';
+
+            try {
+                for (const val of values) {
+                    if (isNaN(val)) throw new Error('Invalid value in list.');
+                    decodedMessage += String.fromCharCode(val - key);
+                }
+                resultBox.innerHTML = `<p><strong>Decoded Message:</strong> ${decodedMessage}</p>`;
+            } catch (e) {
+                resultBox.innerHTML = `<p class="error-message">Error decoding. Ensure values are a comma-separated list of numbers.</p>`;
+            }
+            resultBox.style.display = 'block';
+        }
+
+        // 6. Exit Program
+        function exitProgram() {
+            const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            
+            modalTitle.innerHTML = '<h2 class="card-title">Exit</h2>';
+            modalContent.innerHTML = '<p style="text-align: center;">Exiting program. Goodbye!</p>';
+            modal.style.display = 'flex';
+        }
+
+    </script>
+</body>
+</html>
