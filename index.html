@@ -230,7 +230,7 @@
             const num2Str = document.getElementById('num2').value;
             const base2 = parseInt(document.getElementById('base2').value);
             const resultBox = document.getElementById('result-addition');
-            
+
             const decimal1 = convertBaseToDecimal(num1Str, base1);
             const decimal2 = convertBaseToDecimal(num2Str, base2);
 
@@ -242,14 +242,14 @@
 
             const sumDecimal = decimal1 + decimal2;
             const sumBinary = convertToAnyBase(sumDecimal, 2);
-            const sumOctal = convertToAnyBase(sumDecimal, 2);
-            const sumHex = convertToAnyBase(sumDecimal, 2);
+            const sumOctal = convertToAnyBase(sumDecimal, 8);
+            const sumHex = convertToAnyBase(sumDecimal, 16);
 
             resultBox.innerHTML = `
-                <p><strong>(Decimal):</strong> ${sumDecimal}</p>
-                <p><strong>(Binary):</strong> ${sumBinary}</p>
-                <p><strong>(Octal):</strong> ${sumOctal}</p>
-                <p><strong>(Hex):</strong> ${sumHex}</p>
+                <p><strong>Decimal:</strong> ${sumDecimal}</p>
+                <p><strong>Binary:</strong> ${convertToAnyBase(sumDecimal, 2)}</p>
+                <p><strong>Octal:</strong> ${convertToAnyBase(sumDecimal, 8)}</p>
+                <p><strong>Hex:</strong> ${convertToAnyBase(sumDecimal, 16)}</p>
             `;
             resultBox.style.display = 'block';
         }
