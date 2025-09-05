@@ -25,31 +25,51 @@ function encodeMessage() {
         <p><strong>Encoded (Hex):</strong> [${hexList.join(', ')}]</p>
     `;
     resultBox.style.display = 'block';
+
+    let encodedMessages = JSON.parse(localStorage.getItem('encodedMessages') || '[]');
+    encodedMessages.push({
+        encodedDecimal: decimalList,
+        encodingKey: key
+    });
+    localStorage.setItem('encodedMessages', JSON.stringify(encodedMessages));
 }
 
 // 5. Secret Code Translator (Decode)
 function decodeMessage() {
-    const encodedStr = document.getElementById('encodedValues').value;
     const key = parseInt(document.getElementById('secretKeyDecode').value);
     const resultBox = document.getElementById('result-decode');
-
-    if (encodedStr === '' || isNaN(key)) {
-        resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter values and a valid key.</p>';
+    let encodedMessages = JSON.parse(localStorage.getItem('encodedMessages') || '[]');
+    
+    if (isNaN(key) || encodedMessages.length === 0) {
+        resultBox.innerHTML = '<p class="error-message">Invalid input. Please enter a valid key and encode a message first.</p>';
         resultBox.style.display = 'block';
         return;
     }
 
-    const values = encodedStr.split(',').map(val => parseInt(val.trim()));
-    let decodedMessage = '';
+    let decodedMessage = null;
 
-    try {
-        for (const val of values) {
-            if (isNaN(val)) throw new Error('Invalid value in list.');
-            decodedMessage += String.fromCharCode(val - key);
+    for (let i = 0; i < encodedMessages.length; i++) {
+        if (key === encodedMessages[i].encodingKey) {
+            const encodedDecimal = encodedMessages[i].encodedDecimal;
+            decodedMessage = '';
+            try {
+                for (const val of encodedDecimal) {
+                    decodedMessage += String.fromCharCode(val - key);
+                }
+                break;
+            } catch (e) {
+                resultBox.innerHTML = `<p class="error-message">Error decoding. Ensure values are a comma-separated list of numbers.</p>`;
+                resultBox.style.display = 'block';
+                return;
+            }
         }
-        resultBox.innerHTML = `<p><strong>Decoded Message:</strong> ${decodedMessage}</p>`;
-    } catch (e) {
-        resultBox.innerHTML = `<p class="error-message">Error decoding. Ensure values are a comma-separated list of numbers.</p>`;
     }
+
+    if (decodedMessage) {
+        resultBox.innerHTML = `<p><strong>Decoded Message:</strong> ${decodedMessage}</p>`;
+    } else {
+        resultBox.innerHTML = '<p class="error-message">Incorrect secret key. No message to decode with this key.</p>';
+    }
+    
     resultBox.style.display = 'block';
 }
